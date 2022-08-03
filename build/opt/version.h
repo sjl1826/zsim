@@ -1,0 +1,2 @@
+#define ZSIM_BUILDDATE "Wed Aug  3 12:46:45 AM PDT 2022"
+#define ZSIM_BUILDVERSION ""

@@ -52,7 +52,7 @@ uint32_t SetAssocArray::preinsert(const Address lineAddr, const MemReq* req, Add
     uint32_t set = hf->hash(0, lineAddr) & setMask;
     uint32_t first = set*assoc;
 
-    uint32_t candidate = rp->req, SetAssocCands(first, first+assoc));
+    uint32_t candidate = rp->rankCands(req, SetAssocCands(first, first+assoc));
 
     *wbLineAddr = array[candidate];
     return candidate;
@@ -121,7 +121,7 @@ void ZArray::dfswalk(const Address lineAddr, const int cnt, int &n) {
         return;
     }
 
-    for (uint32_ w = 0; w < ways; w++) {
+    for (uint32_t w = 0; w < ways; w++) {
         uint32_t pos = w * numSets + (hf->hash(w, lineAddr) & setMask);
         uint32_t lineId = lookupArray[pos];
         if (array[lineId] != lineAddr)

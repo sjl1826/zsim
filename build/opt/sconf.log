@@ -1,0 +1,74 @@
+file /home/heysamlee/Desktop/capstone/zsim/SConstruct,line 151:
+	Configure(confdir = build/opt/.sconf_temp)
+scons: Configure: Checking for C library hdf5... 
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.c" is up to date.
+scons: Configure: The original builder output was:
+  |build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.c <-
+  |  |
+  |  |
+  |  |
+  |  |int
+  |  |main() {
+  |  |  
+  |  |return 0;
+  |  |}
+  |  |
+  |
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.o" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.o -c build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.c
+  |
+scons: Configure: Building "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0_d1d2e8fd18bb69fa3c68856530c00144" failed in a previous run and all its sources are up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0_d1d2e8fd18bb69fa3c68856530c00144 build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_0.o -lhdf5
+  |
+scons: Configure: (cached) no
+
+scons: Configure: Checking for C library hdf5_serial... 
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1.c" is up to date.
+scons: Configure: The original builder output was:
+  |build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1.c <-
+  |  |
+  |  |
+  |  |
+  |  |int
+  |  |main() {
+  |  |  
+  |  |return 0;
+  |  |}
+  |  |
+  |
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1.o" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1.o -c build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1.c
+  |
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1_3348308d28c7e8a6e19be3610ff8a0f2" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1_3348308d28c7e8a6e19be3610ff8a0f2 build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_1.o -lhdf5_serial
+  |
+scons: Configure: (cached) yes
+
+scons: Configure: Checking for C library hdf5_serial_hl... 
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2.c" is up to date.
+scons: Configure: The original builder output was:
+  |build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2.c <-
+  |  |
+  |  |
+  |  |
+  |  |int
+  |  |main() {
+  |  |  
+  |  |return 0;
+  |  |}
+  |  |
+  |
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2.o" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2.o -c build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2.c
+  |
+scons: Configure: "build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2_11164db34cf0f8cd0c3236d7f56eaead" is up to date.
+scons: Configure: The original builder output was:
+  |gcc -o build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2_11164db34cf0f8cd0c3236d7f56eaead build/opt/.sconf_temp/conftest_df286a1d2f67e69d030b4eff75ca7e12_2.o -lhdf5_serial -lhdf5_serial_hl
+  |
+scons: Configure: (cached) yes
+

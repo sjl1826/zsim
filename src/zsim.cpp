@@ -28,7 +28,8 @@
 
 #include "zsim.h"
 #include <algorithm>
-#include <bits/signum.h>
+//#include <bits/signum.h>
+#include <signal.h>
 #include <dlfcn.h>
 #include <execinfo.h>
 #include <fstream>
@@ -575,8 +576,9 @@ VOID Instruction(INS ins) {
      * is never emitted by any x86 compiler, as they use other (recommended) nop
      * instructions or sequences.
      */
-    if (INS_IsXchg(ins) && INS_OperandReg(ins, 0) == REG_RCX && INS_OperandReg(ins, 1) == REG_RCX) {
-        //info("Instrumenting magic op");
+    //if (INS_IsXchg(ins) && INS_OperandReg(ins, 0) == REG_RCX && INS_OperandReg(ins, 1) == REG_RCX) {
+    if(INS_IsXchg(ins) && INS_OperandReg(ins, 0) == LEVEL_BASE::REG::REG_RCX && INS_OperandReg(ins, 1) == LEVEL_BASE::REG::REG_RCX) {
+	//info("Instrumenting magic op");
         INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) HandleMagicOp, IARG_THREAD_ID, IARG_REG_VALUE, REG_ECX, IARG_END);
     }
 
@@ -784,11 +786,11 @@ VOID VdsoInstrument(INS ins) {
     if (unlikely(insAddr >= vdsoStart && insAddr < vdsoEnd)) {
         if (vdsoEntryMap.find(insAddr) != vdsoEntryMap.end()) {
             VdsoFunc func = vdsoEntryMap[insAddr];
-            INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) VdsoEntryPoint, IARG_THREAD_ID, IARG_UINT32, (uint32_t)func, IARG_REG_VALUE, REG_RDI, IARG_REG_VALUE, REG_RSI, IARG_END);
+            INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) VdsoEntryPoint, IARG_THREAD_ID, IARG_UINT32, (uint32_t)func, IARG_REG_VALUE, LEVEL_BASE::REG::REG_RDI, IARG_REG_VALUE, LEVEL_BASE::REG::REG_RSI, IARG_END);
         } else if (INS_IsCall(ins)) {
             INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) VdsoCallPoint, IARG_THREAD_ID, IARG_END);
         } else if (INS_IsRet(ins)) {
-            INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) VdsoRetPoint, IARG_THREAD_ID, IARG_REG_REFERENCE, REG_RAX /* return val */, IARG_END);
+            INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR) VdsoRetPoint, IARG_THREAD_ID, IARG_REG_REFERENCE, LEVEL_BASE::REG::REG_RAX /* return val */, IARG_END);
         }
     }
 

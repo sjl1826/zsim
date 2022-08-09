@@ -11,6 +11,7 @@ def buildSim(cppFlags, dir, type, pgo=None):
     print("Building " + type + " zsim at " + buildDir)
 
     env = Environment(ENV = os.environ, tools = ['default', 'textfile'])
+
     env["CPPFLAGS"] = cppFlags
 
     allSrcs = [f for dir, subdirs, files in os.walk("src") for f in Glob(dir + "/*")]
@@ -79,7 +80,7 @@ def buildSim(cppFlags, dir, type, pgo=None):
     ##env["CPPFLAGS"] += " -DDEBUG=1"
 
     # Be a Warning Nazi? (recommended)
-    env["CPPFLAGS"] += " -Werror "
+    ##env["CPPFLAGS"] += " -Werror "
 
     # Enables lib and harness to use the same info/log code,
     # but only lib uses pin locks for thread safety

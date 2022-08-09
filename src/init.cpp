@@ -230,6 +230,7 @@ BaseCache* BuildCacheBank(Config& config, const string& prefix, g_string& name, 
 
 
     //Alright, build the array
+    rp = new NRUReplPolicy(numLines, candidates);
     CacheArray* array = nullptr;
     if (arrayType == "SetAssoc") {
         array = new SetAssocArray(numLines, ways, rp, hf);

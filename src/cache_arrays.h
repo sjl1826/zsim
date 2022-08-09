@@ -96,7 +96,7 @@ class ZArray : public CacheArray {
         Counter statSwaps;
 
     public:
-        ZArray(uint32_t _numLines, uint32_t _ways, uint32_t _candidates, ReplPolicy* _rp, HashFamily* _hf);
+        ZArray(uint32_t _numLines, uint32_t _ways, uint32_t _candidates, NRUReplPolicy* _rp, HashFamily* _hf);
 
         int32_t lookup(const Address lineAddr, const MemReq* req, bool updateReplacement);
         uint32_t preinsert(const Address lineAddr, const MemReq* req, Address* wbLineAddr);

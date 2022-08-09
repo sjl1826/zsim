@@ -134,8 +134,6 @@ void ZArray::dfswalk(const Address lineAddr, const int cnt, int &n) {
 }
 
 uint32_t ZArray::preinsert(const Address lineAddr, const MemReq* req, Address* wbLineAddr) {
-    rp->startReplacement(req);
-
     const int cnt = 20;
     int n = 0;
     dfswalk(lineAddr, cnt, n);

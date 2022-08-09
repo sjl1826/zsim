@@ -101,14 +101,13 @@ class ZArray : public CacheArray {
         uint32_t preinsert(const Address lineAddr, const MemReq* req, Address* wbLineAddr);
         void postinsert(const Address lineAddr, const MemReq* req, uint32_t candidate);
         void dfswalk(const Address lineAddr, const int cnt, int &n);
-        {
 
-            // zcache-specific, since timing code needs to know the number of swaps, and these depend on idx
-            // Should be called after preinsert(). Allows intervening lookups
-            uint32_t getLastCandIdx() const { return lastCandIdx; }
+        // zcache-specific, since timing code needs to know the number of swaps, and these depend on idx
+        // Should be called after preinsert(). Allows intervening lookups
+        uint32_t getLastCandIdx() const { return lastCandIdx; }
 
-            void initStats(AggregateStat * parentStat);
-        };
+        void initStats(AggregateStat * parentStat);
+};
 
 // Simple wrapper classes and iterators for candidates in each case; simplifies replacement policy interface without sacrificing performance
 // NOTE: All must implement the same interface and be POD (we pass them by value)

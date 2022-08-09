@@ -52,6 +52,7 @@ class CacheArray : public GlobAlloc {
 };
 
 class ReplPolicy;
+class NRUReplPolicy;
 class HashFamily;
 
 /* Set-associative cache array */

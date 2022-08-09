@@ -52,7 +52,7 @@ uint32_t SetAssocArray::preinsert(const Address lineAddr, const MemReq* req, Add
     uint32_t set = hf->hash(0, lineAddr) & setMask;
     uint32_t first = set*assoc;
 
-    uint32_t candidate = rp->rankCands(req, SetAssocCands(first, first+assoc));
+    uint32_t candidate = rp->req, SetAssocCands(first, first+assoc));
 
     *wbLineAddr = array[candidate];
     return candidate;
@@ -115,83 +115,32 @@ int32_t ZArray::lookup(const Address lineAddr, const MemReq* req, bool updateRep
     return -1;
 }
 
-uint32_t ZArray::preinsert(const Address lineAddr, const MemReq* req, Address* wbLineAddr) {
-    ZWalkInfo candidates[cands + ways]; //extra ways entries to avoid checking on every expansion
+void ZArray::dfswalk(const Address lineAddr, const int cnt, int &n) {
+    if (cnt == n) {
+        // Cycle present. REHASH.
+        return;
+    }
 
-    bool all_valid = true;
-    uint32_t fringeStart = 0;
-    uint32_t numCandidates = ways; //seeds
-
-    //info("Replacement for incoming 0x%lx", lineAddr);
-
-    //Seeds
-    for (uint32_t w = 0; w < ways; w++) {
-        uint32_t pos = w*numSets + (hf->hash(w, lineAddr) & setMask);
+    for (uint32_ w = 0; w < ways; w++) {
+        uint32_t pos = w * numSets + (hf->hash(w, lineAddr) & setMask);
         uint32_t lineId = lookupArray[pos];
-        candidates[w].set(pos, lineId, -1);
-        all_valid &= (array[lineId] != 0);
-        //info("Seed Candidate %d addr 0x%lx pos %d lineId %d", w, array[lineId], pos, lineId);
-    }
-
-    //Expand fringe in BFS fashion
-    while (numCandidates < cands && all_valid) {
-        uint32_t fringeId = candidates[fringeStart].lineId;
-        Address fringeAddr = array[fringeId];
-        assert(fringeAddr);
-        for (uint32_t w = 0; w < ways; w++) {
-            uint32_t hval = hf->hash(w, fringeAddr) & setMask;
-            uint32_t pos = w*numSets + hval;
-            uint32_t lineId = lookupArray[pos];
-
-            // Logically, you want to do this...
-#if 0
-            if (lineId != fringeId) {
-                //info("Candidate %d way %d addr 0x%lx pos %d lineId %d parent %d", numCandidates, w, array[lineId], pos, lineId, fringeStart);
-                candidates[numCandidates++].set(pos, lineId, (int32_t)fringeStart);
-                all_valid &= (array[lineId] != 0);
-            }
-#endif
-            // But this compiles as a branch and ILP sucks (this data-dependent branch is long-latency and mispredicted often)
-            // Logically though, this is just checking for whether we're revisiting ourselves, so we can eliminate the branch as follows:
-            candidates[numCandidates].set(pos, lineId, (int32_t)fringeStart);
-            all_valid &= (array[lineId] != 0);  // no problem, if lineId == fringeId the line's already valid, so no harm done
-            numCandidates += (lineId != fringeId); // if lineId == fringeId, the cand we just wrote will be overwritten
-        }
-        fringeStart++;
-    }
-
-    //Get best candidate (NOTE: This could be folded in the code above, but it's messy since we can expand more than zassoc elements)
-    assert(!all_valid || numCandidates >= cands);
-    numCandidates = (numCandidates > cands)? cands : numCandidates;
-
-    //info("Using %d candidates, all_valid=%d", numCandidates, all_valid);
-
-    uint32_t bestCandidate = rp->rankCands(req, ZCands(&candidates[0], &candidates[numCandidates]));
-    assert(bestCandidate < numLines);
-
-    //Fill in swap array
-
-    //Get the *minimum* index of cands that matches lineId. We need the minimum in case there are loops (rare, but possible)
-    uint32_t minIdx = -1;
-    for (uint32_t ii = 0; ii < numCandidates; ii++) {
-        if (bestCandidate == candidates[ii].lineId) {
-            minIdx = ii;
-            break;
+        if (array[lineId] != lineAddr)
+        {
+            rp->recordCandidate(lineId);
+            n = n + 1;
+            dfswalk(lineAddr, cnt, n);
         }
     }
-    assert(minIdx >= 0);
-    //info("Best candidate is %d lineId %d", minIdx, bestCandidate);
+}
 
-    lastCandIdx = minIdx; //used by timing simulation code to schedule array accesses
+uint32_t ZArray::preinsert(const Address lineAddr, const MemReq* req, Address* wbLineAddr) {
+    rp->startReplacement(req);
 
-    int32_t idx = minIdx;
-    uint32_t swapIdx = 0;
-    while (idx >= 0) {
-        swapArray[swapIdx++] = candidates[idx].pos;
-        idx = candidates[idx].parentIdx;
-    }
-    swapArrayLen = swapIdx;
-    assert(swapArrayLen > 0);
+    const int cnt = 20;
+    int n = 0;
+    dfswalk(lineAddr, cnt, n);
+    uint32_t bestCandidate = rp->getBestCandidate();
+    cands = n;
 
     //Write address of line we're replacing
     *wbLineAddr = array[bestCandidate];
@@ -200,19 +149,33 @@ uint32_t ZArray::preinsert(const Address lineAddr, const MemReq* req, Address* w
 }
 
 void ZArray::postinsert(const Address lineAddr, const MemReq* req, uint32_t candidate) {
-    //We do the swaps in lookupArray, the array stays the same
-    assert(lookupArray[swapArray[0]] == candidate);
-    for (uint32_t i = 0; i < swapArrayLen-1; i++) {
-        //info("Moving position %d (lineId %d) <- %d (lineId %d)", swapArray[i], lookupArray[swapArray[i]], swapArray[i+1], lookupArray[swapArray[i+1]]);
-        lookupArray[swapArray[i]] = lookupArray[swapArray[i+1]];
+    int lookupLen = int(sizeof(lookupArray) - 1);
+    int numC = 0;
+    int flag = 0;
+    while (numC < numLines*numSets) {
+        for(uint32_t w = 0; w < ways; w++) {
+            uint32_t hval = hf->hash(w, fringeAddr) & setMask;
+            uint32_t pos = w * numSets + hval;
+            if (lookupArray[i] == candidate && i != lookupLen) {
+                uint32_t prev = candidate;
+                for (uint32_t j = lookupLen; j >= i; j--)
+                {
+                    uint32_t tmp = lookupArray[j];
+                    lookupArray[j] = prev;
+                    prev = tmp;
+                }
+                flag = 1;
+                break;
+            }
+            numC += 1;
+        }
+        if (flag) {
+            break;
+        }
     }
-    lookupArray[swapArray[swapArrayLen-1]] = candidate; //note that in preinsert() we walk the array backwards when populating swapArray, so the last elem is where the new line goes
-    //info("Inserting lineId %d in position %d", candidate, swapArray[swapArrayLen-1]);
 
     rp->replaced(candidate);
     array[candidate] = lineAddr;
     rp->update(candidate, req);
-
-    statSwaps.inc(swapArrayLen-1);
 }
 

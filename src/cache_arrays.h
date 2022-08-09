@@ -78,7 +78,7 @@ class ZArray : public CacheArray {
     private:
         Address* array; //maps line id to address
         uint32_t* lookupArray; //maps physical position to lineId
-        ReplPolicy* rp;
+        NRUReplPolicy* rp;
         HashFamily* hf;
         uint32_t numLines;
         uint32_t numSets;

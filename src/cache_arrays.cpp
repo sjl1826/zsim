@@ -156,9 +156,9 @@ void ZArray::postinsert(const Address lineAddr, const MemReq* req, uint32_t cand
         for(uint32_t w = 0; w < ways; w++) {
             uint32_t hval = hf->hash(w, fringeAddr) & setMask;
             uint32_t pos = w * numSets + hval;
-            if (lookupArray[i] == candidate && i != lookupLen) {
+            if (lookupArray[pos] == candidate && pos != lookupLen) {
                 uint32_t prev = candidate;
-                for (uint32_t j = lookupLen; j >= i; j--)
+                for (uint32_t j = lookupLen; j >= pos; j--)
                 {
                     uint32_t tmp = lookupArray[j];
                     lookupArray[j] = prev;
